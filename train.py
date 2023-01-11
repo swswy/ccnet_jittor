@@ -47,7 +47,7 @@ def update_lr(optimizer, num, total, power):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lr', type=float, default=2e-3, help="learning rate")
+    parser.add_argument('--lr', type=float, default=1e-2, help="learning rate")
     parser.add_argument('--batch_size', type=int, default=16, help="batch size")
     parser.add_argument('--epochs', type=int, default=30, help="epochs")
     parser.add_argument('--ccatn_num', type=int, default=2, help="num of cc attention")
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         'power': 0.9,
         'momentum': 0.9,
         'num_classes': 151,
-        'weight_decay': 5e-4,
+        'weight_decay': 2e-5,
         'log_dir': './log/',
         'save_dir': './checkpoint/',
         'dataset_dir': './ADEChallengeData2016/',
@@ -80,9 +80,8 @@ if __name__ == "__main__":
     model = CCNet_Model(num_classes=options['num_classes'],recurrence=options['ccatn_num'])
     train_loader = ADE20K(dataset_dir=options['dataset_dir'], batch_size=options['batch_size'], mode='training', shuffle=True)
     criterion = nn.CrossEntropyLoss(ignore_index=0)
-    optimizer = nn.Adam(model.parameters(), options['lr'], weight_decay=options['weight_decay'])
-    # optimizer = nn.SGD(model.parameters(), lr=options['lr'], momentum=options['momentum'], weight_decay=options['weight_decay'])
-    
+    # optimizer = nn.Adam(model.parameters(), options['lr'], weight_decay=options['weight_decay'])
+    optimizer = nn.SGD(model.parameters(), lr=options['lr'], momentum=options['momentum'], weight_decay=options['weight_decay'])
     best_val_miou=0
     best_epoch=0
     writer=SummaryWriter(log_dir=options['log_dir'])

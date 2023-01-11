@@ -4,12 +4,12 @@ import utils as tools
 from datasets.dataset import ADE20K
 import numpy as np
 from tqdm import tqdm
-from networks.van_cca import CCNet_Model
-# from networks.resnet_cca import CCNet_Model
+import networks.van_cca
+import networks.resnet_cca
 
 BATCH_SIZE = 10
 NUM_CLASSES = 151
-VAL_DIR='.\ADEChallengeData2016'
+VAL_DIR='./ADEChallengeData2016'
 
 # 对整个验证集进行计算
 @jt.no_grad()
@@ -55,13 +55,14 @@ def eval(model,criterion=None, epoch=0):
     return epoch_loss, epoch_acc, epoch_miou
 
 def eval_all():
-    model = CCNet_Model(num_classes=NUM_CLASSES,recurrence=2)
     list_dir = os.listdir("./checkpoint/")
     print("models include:",list_dir)
     max_miou = -1
     max_item = ""
     for idx,item in enumerate(list_dir):
         print(item)
+        model = networks.resnet_cca.CCNet_Model(num_classes=NUM_CLASSES, recurrence=2) if "resnet" in item else \
+            networks.van_cca.CCNet_Model(num_classes=NUM_CLASSES, recurrence=2)
         model.load("./checkpoint/"+item)
         epoch_loss, epoch_acc, epoch_miou = eval(model=model, epoch=idx)
         if(max_miou < epoch_miou):
@@ -71,5 +72,5 @@ def eval_all():
 
 
 if __name__ == "__main__":
-    eval()
+    eval_all()
  
